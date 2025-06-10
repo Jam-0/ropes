@@ -1,168 +1,1082 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Ropes</title>
-	<style type="text/css">
-html, body
-{
-	background-color: #e0f4fc;
-	margin: 0;
-	height: 100%;
-	font-family: sans-serif;
-	font-size: 18px;
-}
-#wrapper
-{
-	margin: 0 0 -21px;
-	padding: 1px;
-	min-height: 100%;
-	border-bottom: 21px solid transparent;
-	box-sizing: border-box;
-}
-#title
-{
-	background-color: #ea316e;
-	margin: 9px;
-	padding: .8em;
-	border: 1px solid black;
-	border-radius: 10px;
-	box-shadow: 3px 3px 0 0 rgba(0,0,0,0.3);
-	text-align: center;
-	color: #f5f5f5;
-}
-#main
-{
-	background-color: #b1e3fa;
-	margin: 9px;
-	padding: 15px 0;
-	border: 1px solid black;
-	border-radius: 10px;
-	box-shadow: 3px 3px 0 0 rgba(0,0,0,0.3);
-}
-#main a { color: #526ffc; }
-#main a:hover, #main a:active { color: #f2f2f2; background: #ea316e; }
-#footer
-{
-	background-color: #b1e3fa;
-	padding-top: 3px;
-	height: 17px;
-	border-top: 1px dashed #77A;
-	color: #444;
-	font-size: 9pt;
-	text-align: center;
-	overflow-y: auto;
-}
-#footer a { color: #77A; }
-#footer a:hover, #footera:active { color: #ea316e; }
-@media (max-width: 850px)
-{
-	#wrapper { font-size: 80%; }
-	#title { padding: .2em; }
-}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boredom</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #fff;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: normal;
+            color: #666;
+        }
+        
+        .nav {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .nav-button {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            border-right: 1px solid #ddd;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-button:last-child {
+            border-right: none;
+        }
+        
+        .nav-button.active {
+            background-color: #e9e9e9;
+        }
+        
+        .nav-button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .skill-tree {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            margin: 20px 0;
+        }
+        
+        .skill-node {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .skill-connection {
+            position: absolute;
+            height: 2px;
+            background-color: #ddd;
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+        
+        .skill-connection.active {
+            background-color: #4CAF50;
+        }
+        
+        .skill-node.unlocked {
+            border-color: #4CAF50;
+            background-color: #f1f8e9;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .skill-node.completed {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+        }
+        
+        .skill-node.locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .skill-node.pressing {
+            transform: scale(0.95);
+            background-color: #ffeb3b;
+            border-color: #ff9800;
+        }
+        
+        .skill-title {
+            font-weight: bold;
+            margin-bottom: 2px;
+            line-height: 1.1;
+        }
+        
+        .skill-duration {
+            font-size: 8px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .press-indicator {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .press-progress {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .press-progress-fill {
+            height: 100%;
+            background-color: #ff9800;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .meditation-blue-static {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, #2E5984 0%, #1E3A5F 50%, #2E5984 100%);
+            display: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .blue-static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(255,255,255,0.03) 3px
+                );
+            animation: staticFlow 20s linear infinite;
+        }
+        
+        @keyframes staticFlow {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+        
+        .water-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .blue-meditation-timer {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .blue-meditation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .water-ripple {
+            position: absolute;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: rippleExpand 2s ease-out forwards;
+        }
+        
+        @keyframes rippleExpand {
+            0% {
+                width: 10px;
+                height: 10px;
+                opacity: 1;
+                border-width: 3px;
+            }
+            100% {
+                width: 150px;
+                height: 150px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+        
+        .meditation-wave {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wave-animation {
+            position: absolute;
+            top: 50%;
+            left: -50%;
+            width: 200%;
+            height: 2px;
+            background-color: #999;
+            animation: wave 3s ease-in-out infinite;
+            transform-origin: center;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: translateY(-10px) scaleX(0.8); }
+            50% { transform: translateY(10px) scaleX(1.2); }
+        }
+        
+        .meditation-word {
+            font-size: 32px;
+            margin-top: 30px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            color: #333;
+        }
+        
+        .meditation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .control-button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        .control-button:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .meditation-timer {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .options-content {
+            display: none;
+        }
+        
+        .option-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #eee;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s;
+        }
+    </style>
 </head>
 <body>
-<div id="wrapper">
-	<h1 id="title">Ropes</h1>
-	<div id="main">
-		<center style="margin-bottom:10px">ropes ropes ropes</center>
-		<center><canvas id="canvas" width="1280" height="720" style="max-width:100%;background:#000;vertical-align:middle"></canvas></center>
-	</div>
-</div>
-<div id="footer">&copy; Ropert &middot; Made using the <a href="https://love2d.org/" target="_blank">LÖVE Framework</a> (<a href="https://raw.githubusercontent.com/love2d/love/main/license.txt" target="_blank">License</a>) &middot; Packaged using <a href="https://schellingb.github.io/LoveWebBuilder/" target="_blank">LÖVE Web Builder</a></div>
-<script type="text/javascript">(function(){
-var TXT =
-{
-	PLAYBTN: 'Click here to launch the game',
-	LOAD:    'Downloading Game',
-	PARSE:   'Preparing Game',
-	EXECUTE: 'Starting Game',
-	DLERROR: 'Error while downloading game data.\nCheck your internet connection.',
-	NOWEBGL: 'Your browser or graphics card does not seem to support <a href="http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation">WebGL</a>.<br>Find out how to get it <a href="http://get.webgl.org/">here</a>.',
-};
-var canvas = document.getElementById('canvas'), ctx;
-var Msg = function(m)
-{
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.fillStyle = '#888';
-	for (var i = 0, a = m.split('\n'), n = a.length; i != n; i++)
-		ctx.fillText(a[i], canvas.width/2, canvas.height/2-(n-1)*20+10+i*40);
-};
-var Fail = function(m)
-{
-	canvas.outerHTML = '<div style="max-width:90%;width:'+canvas.clientWidth+'px;height:'+canvas.clientHeight+'px;background:#000;display:table-cell;vertical-align:middle"><div style="background-color:#FFF;color:#000;padding:1.5em;max-width:640px;width:80%;margin:auto;text-align:center">'+TXT.NOWEBGL+(m?'<br><br>'+m:'')+'</div></div>';
-};
-var DoExecute = function()
-{
-	Msg(TXT.EXECUTE);
-	Module.canvas = canvas.cloneNode(false);
-	Module.canvas.oncontextmenu = function(e) { e.preventDefault() };
-	Module.setWindowTitle = function(title) { };
-	Module.postRun = function()
-	{
-		if (!Module.noExitRuntime) { Fail(); return; }
-		canvas.parentNode.replaceChild(Module.canvas, canvas);
-		Txt = Msg = ctx = canvas = null;
-		Module.canvas.focus();
-	};
-	setTimeout(function() { Module.run(['/p']); }, 50);
-};
-var DoLoad = function()
-{
-	Msg(TXT.LOAD);
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'index.js');
-	xhr.onprogress = function(e)
-	{
-		if (!e.lengthComputable || ctx.pCnt++ < 5) return;
-		var x = canvas.width/2-150, y = canvas.height*.6, w = Math.min(e.loaded/e.total,1)*300, g = ctx.createLinearGradient(x,0,x+w,0);
-		g.addColorStop(0,'#72d3ff');g.addColorStop(1,'#a2d4ea');
-		ctx.fillStyle = '#1497ce'; ctx.fillRect(x-2,y-2,304,28);
-		ctx.fillStyle = '#FFFFFF'; ctx.fillRect(x  ,y  ,300,24);
-		ctx.fillStyle = g;         ctx.fillRect(x  ,y  ,w,  24);
-	};
-	xhr.onerror = xhr.onabort = function() { Msg(TXT.DLERROR); canvas.disabled = false; };
-	xhr.onload = function()
-	{
-		if (xhr.status != 200) { Msg(TXT.DLERROR + '<br>Status: ' + xhr.statusText ); canvas.disabled = false; return; }
-		Msg(TXT.PARSE);
-		setTimeout(function()
-		{
-			window.onerror = function(e,u,l) { Fail(e+'<br>('+u+':'+l+')'); };
-			Module = { TOTAL_MEMORY: 1024*1024*96, TOTAL_STACK: 1024*1024*2, currentScriptUrl: '-', preInit: DoExecute };
-			var s = document.createElement('script'), d = document.documentElement;
-			s.textContent = xhr.response;
-			d.appendChild(s);
-			d.removeChild(s);
-			xhr = xhr.response = s = s.textContent = null;
-		},50);
-	};
-	xhr.send();
-}
-var DoSetup = function()
-{
-	canvas.onclick = function()
-	{
-		if (canvas.disabled) return;
-		canvas.disabled = true;
-		canvas.scrollIntoView();
-		ctx.pCnt = 0;
-		DoLoad();
-	};
-	ctx.fillStyle = '#888';
-	ctx.fillRect(canvas.width/2-254, canvas.height/2-104, 508, 208);
-	ctx.fillStyle = '#333';
-	ctx.fillRect(canvas.width/2-250, canvas.height/2-100, 500, 200);
-	ctx.fillStyle = '#888';
-	ctx.fillText(TXT.PLAYBTN, canvas.width/2, canvas.height/2+10);
-};
-canvas.oncontextmenu = function(e) { e.preventDefault() };
-ctx = canvas.getContext('2d');
-ctx.font = '30px sans-serif';
-ctx.textAlign = 'center';
-DoSetup();
-})()</script>
-</html>
+    <div class="container">
+        <div class="header">
+            <h1>Boredom</h1>
+        </div>
+        
+        <div class="nav">
+            <button class="nav-button active" data-tab="boredom">Boredom</button>
+            <button class="nav-button" data-tab="options">Options</button>
+        </div>
+        
+        <div class="content">
+            <div id="boredom-content" class="boredom-content">
+                <div class="skill-tree">
+                    <!-- Skill Connections -->
+                    <div class="skill-connection" id="conn-1-2" style="left: 150px; top: 375px; width: 40px; transform: rotate(-60deg); transform-origin: left;"></div>
+                    <div class="skill-connection" id="conn-1-3" style="left: 150px; top: 375px; width: 40px; transform: rotate(60deg); transform-origin: left;"></div>
+                    <div class="skill-connection" id="conn-2-4" style="left: 110px; top: 295px; width: 40px; transform: rotate(-30deg); transform-origin: left;"></div>
+                    <div class="skill-connection" id="conn-3-4" style="left: 230px; top: 295px; width: 40px; transform: rotate(30deg); transform-origin: left;"></div>
+                    <div class="skill-connection" id="conn-4-5" style="left: 175px; top: 225px; width: 50px; transform: rotate(0deg); transform-origin: left;"></div>
+                    
+                    <!-- Foundation Node (Bottom) -->
+                    <div class="skill-node unlocked" data-skill="wave-meditation" style="left: 130px; top: 380px;">
+                        <div class="skill-title">Wave</div>
+                        <div class="skill-title">Meditation</div>
+                        <div class="skill-duration">2 min</div>
+                        <div class="press-indicator">Hold to begin</div>
+                        <div class="press-progress">
+                            <div class="press-progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Second Tier (Left and Right) -->
+                    <div class="skill-node locked" data-skill="static-contemplation" style="left: 70px; top: 300px;">
+                        <div class="skill-title">Static</div>
+                        <div class="skill-title">Contemplation</div>
+                        <div class="skill-duration">5 min</div>
+                        <div class="press-indicator">Hold to begin</div>
+                        <div class="press-progress">
+                            <div class="press-progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-node locked" data-skill="number-sequence" style="left: 190px; top: 300px;">
+                        <div class="skill-title">Number</div>
+                        <div class="skill-title">Patience</div>
+                        <div class="skill-duration">8 min</div>
+                        <div class="press-indicator">Hold to begin</div>
+                        <div class="press-progress">
+                            <div class="press-progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Third Tier (Center) -->
+                    <div class="skill-node locked" data-skill="color-breathing" style="left: 130px; top: 220px;">
+                        <div class="skill-title">Color</div>
+                        <div class="skill-title">Breathing</div>
+                        <div class="skill-duration">12 min</div>
+                        <div class="press-indicator">Hold to begin</div>
+                        <div class="press-progress">
+                            <div class="press-progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Master Tier (Top) -->
+                    <div class="skill-node locked" data-skill="ultimate-void" style="left: 130px; top: 140px;">
+                        <div class="skill-title">Ultimate</div>
+                        <div class="skill-title">Void</div>
+                        <div class="skill-duration">20 min</div>
+                        <div class="press-indicator">Hold to begin</div>
+                        <div class="press-progress">
+                            <div class="press-progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="options-content" class="options-content">
+                <div class="option-item">
+                    <span>Sound Effects</span>
+                    <label><input type="checkbox" id="sound-toggle" checked> Enabled</label>
+                </div>
+                <div class="option-item">
+                    <span>Vibration</span>
+                    <label><input type="checkbox" id="vibration-toggle" checked> Enabled</label>
+                </div>
+                <div class="option-item">
+                    <span>Progress Tracking</span>
+                    <label><input type="checkbox" id="tracking-toggle" checked> Enabled</label>
+                </div>
+                <div class="option-item">
+                    <span>Total Sessions Completed</span>
+                    <span id="total-sessions">0</span>
+                </div>
+                <div class="option-item">
+                    <span>Total Time Spent in Boredom</span>
+                    <span id="total-time">0 minutes</span>
+                </div>
+                <div class="option-item">
+                    <button class="control-button" id="reset-progress">Reset All Progress</button>
+                    <span style="font-size: 12px; color: #666;">For testing purposes</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="meditation-screen" id="meditation-screen">
+        <div class="meditation-timer" id="meditation-timer">2:00</div>
+        <div class="meditation-wave">
+            <div class="wave-animation"></div>
+        </div>
+        <div class="meditation-word" id="meditation-word"></div>
+        <div class="meditation-controls">
+            <button class="control-button" id="pause-button">Pause</button>
+            <button class="control-button" id="exit-button">Exit</button>
+        </div>
+    </div>
+
+    <div class="meditation-blue-static" id="blue-static-screen">
+        <div class="blue-static-overlay"></div>
+        <canvas class="water-canvas" id="water-canvas"></canvas>
+        <div class="blue-meditation-timer" id="blue-meditation-timer">2:00</div>
+        <div class="blue-meditation-controls">
+            <button class="control-button" id="blue-pause-button">Pause</button>
+            <button class="control-button" id="blue-exit-button">Exit</button>
+        </div>
+    </div>
+
+    <script>
+        class BoredomApp {
+            constructor() {
+                this.currentTab = 'boredom';
+                this.skills = {
+                    'wave-meditation': { unlocked: true, completed: false, progress: 0 },
+                    'static-contemplation': { unlocked: false, completed: false, progress: 0 },
+                    'number-sequence': { unlocked: false, completed: false, progress: 0 },
+                    'color-breathing': { unlocked: false, completed: false, progress: 0 },
+                    'ultimate-void': { unlocked: false, completed: false, progress: 0 }
+                };
+                this.meditationActive = false;
+                this.meditationTimer = null;
+                this.timeRemaining = 120; // 2 minutes in seconds
+                this.isPaused = false;
+                this.buzzAudio = null;
+                this.pressTimer = null;
+                this.pressProgress = 0;
+                this.pressInterval = null;
+                this.currentPressNode = null;
+                this.currentMeditationType = null;
+                this.waterCanvas = null;
+                this.waterContext = null;
+                this.ripples = [];
+                
+                this.words = ['serenity', 'void', 'stillness', 'breath', 'moment', 'silence', 'peace', 'now', 'here', 'empty'];
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.createBuzzSound();
+                this.loadProgress();
+                this.updateUI();
+                this.ensureProperInitialState();
+            }
+            
+            ensureProperInitialState() {
+                // Ensure all meditation screens are hidden on startup
+                document.getElementById('meditation-screen').style.display = 'none';
+                document.getElementById('blue-static-screen').style.display = 'none';
+                
+                // Reset all button states
+                document.getElementById('pause-button').textContent = 'Pause';
+                document.getElementById('blue-pause-button').textContent = 'Pause';
+                
+                // Clear any lingering meditation state
+                this.meditationActive = false;
+                this.isPaused = false;
+                this.currentMeditationType = null;
+                
+                if (this.meditationTimer) {
+                    clearInterval(this.meditationTimer);
+                    this.meditationTimer = null;
+                }
+                
+                // Clear any remaining ripples
+                document.querySelectorAll('.water-ripple').forEach(ripple => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                });
+            }
+            
+            setupEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.nav-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+                
+                // Skill nodes with long press
+                document.querySelectorAll('.skill-node').forEach(node => {
+                    let pressStartTime;
+                    
+                    // Mouse events
+                    node.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        const skillId = e.currentTarget.dataset.skill;
+                        this.startLongPress(skillId, e.currentTarget);
+                    });
+                    
+                    node.addEventListener('mouseup', (e) => {
+                        this.endLongPress();
+                    });
+                    
+                    node.addEventListener('mouseleave', (e) => {
+                        this.endLongPress();
+                    });
+                    
+                    // Touch events for mobile
+                    node.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        const skillId = e.currentTarget.dataset.skill;
+                        this.startLongPress(skillId, e.currentTarget);
+                    });
+                    
+                    node.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.endLongPress();
+                    });
+                    
+                    node.addEventListener('touchcancel', (e) => {
+                        this.endLongPress();
+                    });
+                });
+                
+                // Meditation controls
+                document.getElementById('pause-button').addEventListener('click', () => {
+                    this.togglePause();
+                });
+                
+                document.getElementById('exit-button').addEventListener('click', () => {
+                    this.exitMeditation();
+                });
+                
+                // Blue meditation controls
+                document.getElementById('blue-pause-button').addEventListener('click', () => {
+                    this.togglePause();
+                });
+                
+                document.getElementById('blue-exit-button').addEventListener('click', () => {
+                    this.exitMeditation();
+                });
+                
+                // Blue static interaction
+                const blueScreen = document.getElementById('blue-static-screen');
+                blueScreen.addEventListener('mousedown', (e) => this.createWaterRipple(e));
+                blueScreen.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.createWaterRipple(e.touches[0]);
+                });
+                
+                // Initialize water canvas
+                this.waterCanvas = document.getElementById('water-canvas');
+                this.waterContext = this.waterCanvas.getContext('2d');
+                this.setupCanvas();
+                
+                // Reset progress button
+                document.getElementById('reset-progress').addEventListener('click', () => {
+                    this.resetAllProgress();
+                });
+            }
+            
+            createBuzzSound() {
+                // Create a simple buzz tone using Web Audio API
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.createNewBuzz();
+                } catch (e) {
+                    console.log('Audio context not available');
+                    this.audioContext = null;
+                }
+            }
+            
+            createNewBuzz() {
+                if (!this.audioContext) return;
+                
+                if (this.buzzOscillator) {
+                    try {
+                        this.buzzOscillator.stop();
+                    } catch (e) {
+                        // Oscillator already stopped
+                    }
+                }
+                
+                try {
+                    this.buzzOscillator = this.audioContext.createOscillator();
+                    this.buzzGain = this.audioContext.createGain();
+                    
+                    this.buzzOscillator.connect(this.buzzGain);
+                    this.buzzGain.connect(this.audioContext.destination);
+                    
+                    this.buzzOscillator.frequency.setValueAtTime(120, this.audioContext.currentTime);
+                    this.buzzOscillator.type = 'sawtooth';
+                    this.buzzGain.gain.setValueAtTime(0.05, this.audioContext.currentTime);
+                } catch (e) {
+                    console.log('Error creating buzz sound');
+                }
+            }
+            
+            playBuzz() {
+                if (document.getElementById('sound-toggle').checked && this.audioContext) {
+                    this.createNewBuzz();
+                    try {
+                        this.buzzOscillator.start();
+                    } catch (e) {
+                        console.log('Error playing buzz');
+                    }
+                }
+            }
+            
+            stopBuzz() {
+                if (this.buzzOscillator) {
+                    try {
+                        this.buzzOscillator.stop();
+                    } catch (e) {
+                        // Already stopped
+                    }
+                }
+            }
+            
+            switchTab(tabName) {
+                this.currentTab = tabName;
+                
+                // Update nav buttons
+                document.querySelectorAll('.nav-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                
+                // Show/hide content
+                document.getElementById('boredom-content').style.display = tabName === 'boredom' ? 'block' : 'none';
+                document.getElementById('options-content').style.display = tabName === 'options' ? 'block' : 'none';
+            }
+            
+            startLongPress(skillId, nodeElement) {
+                if (!this.skills[skillId].unlocked) return;
+                if (this.pressInterval) return; // Already pressing
+                
+                this.currentPressNode = nodeElement;
+                this.pressProgress = 0;
+                
+                nodeElement.classList.add('pressing');
+                
+                this.pressInterval = setInterval(() => {
+                    this.pressProgress += 1; // 1% per 100ms = 10 seconds total
+                    
+                    const progressFill = nodeElement.querySelector('.press-progress-fill');
+                    progressFill.style.width = this.pressProgress + '%';
+                    
+                    if (this.pressProgress >= 100) {
+                        this.completeLongPress(skillId);
+                    }
+                }, 100);
+            }
+            
+            endLongPress() {
+                if (this.pressInterval) {
+                    clearInterval(this.pressInterval);
+                    this.pressInterval = null;
+                }
+                
+                if (this.currentPressNode) {
+                    this.currentPressNode.classList.remove('pressing');
+                    const progressFill = this.currentPressNode.querySelector('.press-progress-fill');
+                    progressFill.style.width = '0%';
+                    this.currentPressNode = null;
+                }
+                
+                this.pressProgress = 0;
+            }
+            
+            completeLongPress(skillId) {
+                this.endLongPress();
+                this.startSkill(skillId);
+            }
+            
+            updateSkillConnections() {
+                const connections = [
+                    { id: 'conn-1-2', from: 'wave-meditation', to: 'static-contemplation' },
+                    { id: 'conn-1-3', from: 'wave-meditation', to: 'number-sequence' },
+                    { id: 'conn-2-4', from: 'static-contemplation', to: 'color-breathing' },
+                    { id: 'conn-3-4', from: 'number-sequence', to: 'color-breathing' },
+                    { id: 'conn-4-5', from: 'color-breathing', to: 'ultimate-void' }
+                ];
+                
+                connections.forEach(conn => {
+                    const element = document.getElementById(conn.id);
+                    if (element) {
+                        if (this.skills[conn.from].completed || this.skills[conn.to].unlocked) {
+                            element.classList.add('active');
+                        } else {
+                            element.classList.remove('active');
+                        }
+                    }
+                });
+            }
+            
+            startWaveMeditation() {
+                this.meditationActive = true;
+                this.currentMeditationType = 'wave';
+                this.timeRemaining = 120;
+                this.isPaused = false;
+                
+                document.getElementById('meditation-screen').style.display = 'flex';
+                document.getElementById('meditation-word').style.opacity = '0';
+                
+                this.playBuzz();
+                this.startMeditationTimer('wave');
+                
+                // Show word after 1 minute
+                setTimeout(() => {
+                    if (this.meditationActive && !this.isPaused && this.currentMeditationType === 'wave') {
+                        this.showRandomWord();
+                    }
+                }, 60000);
+            }
+            
+            startMeditationTimer(type = 'wave') {
+                console.log(`Starting ${type} meditation timer for ${this.timeRemaining} seconds`);
+                
+                this.meditationTimer = setInterval(() => {
+                    if (!this.isPaused && this.meditationActive) {
+                        this.timeRemaining--;
+                        console.log(`Timer: ${this.timeRemaining} seconds remaining`);
+                        this.updateTimerDisplay(type);
+                        
+                        if (this.timeRemaining <= 0) {
+                            console.log('Timer completed, finishing meditation');
+                            this.completeMeditation();
+                        }
+                    }
+                }, 1000);
+            }
+            
+            updateTimerDisplay(type = 'wave') {
+                const minutes = Math.floor(this.timeRemaining / 60);
+                const seconds = this.timeRemaining % 60;
+                const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (type === 'wave') {
+                    document.getElementById('meditation-timer').textContent = timeString;
+                } else if (type === 'blue') {
+                    document.getElementById('blue-meditation-timer').textContent = timeString;
+                }
+            }
+            
+            showRandomWord() {
+                if (!this.meditationActive || this.currentMeditationType !== 'wave') return;
+                
+                const randomWord = this.words[Math.floor(Math.random() * this.words.length)];
+                const wordElement = document.getElementById('meditation-word');
+                
+                if (wordElement) {
+                    wordElement.textContent = randomWord;
+                    wordElement.style.opacity = '1';
+                    
+                    console.log(`Showing word: ${randomWord}`);
+                    
+                    // Speak the word if sound is enabled
+                    if (document.getElementById('sound-toggle').checked && 'speechSynthesis' in window) {
+                        try {
+                            const utterance = new SpeechSynthesisUtterance(randomWord);
+                            utterance.rate = 0.5;
+                            utterance.pitch = 0.8;
+                            speechSynthesis.speak(utterance);
+                        } catch (e) {
+                            console.log('Speech synthesis not available');
+                        }
+                    }
+                    
+                    // Hide word after 3 seconds
+                    setTimeout(() => {
+                        if (wordElement) {
+                            wordElement.style.opacity = '0';
+                        }
+                    }, 3000);
+                }
+            }
+            
+            togglePause() {
+                this.isPaused = !this.isPaused;
+                
+                // Update the correct pause button based on meditation type
+                if (this.currentMeditationType === 'wave') {
+                    document.getElementById('pause-button').textContent = this.isPaused ? 'Resume' : 'Pause';
+                } else if (this.currentMeditationType === 'blue-static') {
+                    document.getElementById('blue-pause-button').textContent = this.isPaused ? 'Resume' : 'Pause';
+                }
+                
+                if (this.isPaused) {
+                    this.stopBuzz();
+                } else {
+                    if (this.currentMeditationType === 'wave') {
+                        this.playBuzz();
+                    }
+                }
+            }
+            
+            exitMeditation() {
+                this.meditationActive = false;
+                this.isPaused = false;
+                
+                if (this.meditationTimer) {
+                    clearInterval(this.meditationTimer);
+                }
+                
+                this.stopBuzz();
+                document.getElementById('meditation-screen').style.display = 'none';
+                document.getElementById('pause-button').textContent = 'Pause';
+            }
+            
+            setupCanvas() {
+                const resizeCanvas = () => {
+                    this.waterCanvas.width = window.innerWidth;
+                    this.waterCanvas.height = window.innerHeight;
+                };
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+            }
+            
+            createWaterRipple(event) {
+                if (!this.meditationActive || this.currentMeditationType !== 'blue-static') return;
+                
+                const rect = this.waterCanvas.getBoundingClientRect();
+                const x = (event.clientX || event.pageX) - rect.left;
+                const y = (event.clientY || event.pageY) - rect.top;
+                
+                // Create ripple element
+                const ripple = document.createElement('div');
+                ripple.className = 'water-ripple';
+                ripple.style.left = (x - 5) + 'px';
+                ripple.style.top = (y - 5) + 'px';
+                
+                document.getElementById('blue-static-screen').appendChild(ripple);
+                
+                // Remove ripple after animation
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 2000);
+                
+                // Add subtle vibration if supported
+                if (navigator.vibrate && document.getElementById('vibration-toggle').checked) {
+                    navigator.vibrate(50);
+                }
+            }
+            
+            startSkill(skillId) {
+                if (!this.skills[skillId].unlocked) return;
+                
+                if (skillId === 'wave-meditation') {
+                    this.startWaveMeditation();
+                } else if (skillId === 'static-contemplation') {
+                    this.startBlueStaticMeditation();
+                }
+                // Add other skill types here as needed
+            }
+            
+            startBlueStaticMeditation() {
+                this.meditationActive = true;
+                this.currentMeditationType = 'blue-static';
+                this.timeRemaining = 120; // 2 minutes
+                this.isPaused = false;
+                
+                document.getElementById('blue-static-screen').style.display = 'block';
+                
+                this.startMeditationTimer('blue');
+            }
+            
+            completeMeditation() {
+                console.log('Completing meditation:', this.currentMeditationType);
+                
+                const currentSkill = this.getCurrentMeditationSkill();
+                console.log('Current skill:', currentSkill);
+                
+                this.skills[currentSkill].completed = true;
+                this.skills[currentSkill].progress = 100;
+                
+                // Unlock next skills based on tree structure
+                this.unlockNextSkills(currentSkill);
+                
+                this.exitMeditation();
+                this.updateUI();
+                this.saveProgress();
+                
+                // Show completion message
+                const nextUnlocked = this.getNextUnlockedSkills(currentSkill);
+                if (nextUnlocked.length > 0) {
+                    alert(`${this.getSkillDisplayName(currentSkill)} completed! ${nextUnlocked.map(s => this.getSkillDisplayName(s)).join(' and ')} unlocked.`);
+                } else {
+                    alert(`${this.getSkillDisplayName(currentSkill)} completed! You have mastered all boredom techniques.`);
+                }
+            }
+            
+            getCurrentMeditationSkill() {
+                // For now, return wave-meditation, but this could be dynamic
+                return 'wave-meditation';
+            }
+            
+            unlockNextSkills(completedSkill) {
+                const unlockMap = {
+                    'wave-meditation': ['static-contemplation', 'number-sequence'],
+                    'static-contemplation': ['color-breathing'],
+                    'number-sequence': ['color-breathing'],
+                    'color-breathing': ['ultimate-void']
+                };
+                
+                const toUnlock = unlockMap[completedSkill] || [];
+                toUnlock.forEach(skillId => {
+                    this.skills[skillId].unlocked = true;
+                });
+            }
+            
+            getNextUnlockedSkills(completedSkill) {
+                const unlockMap = {
+                    'wave-meditation': ['static-contemplation', 'number-sequence'],
+                    'static-contemplation': ['color-breathing'],
+                    'number-sequence': ['color-breathing'],
+                    'color-breathing': ['ultimate-void']
+                };
+                
+                return unlockMap[completedSkill] || [];
+            }
+            
+            getSkillDisplayName(skillId) {
+                const names = {
+                    'wave-meditation': 'Wave Meditation',
+                    'static-contemplation': 'Static Contemplation',
+                    'number-sequence': 'Number Patience',
+                    'color-breathing': 'Color Breathing',
+                    'ultimate-void': 'Ultimate Void'
+                };
+                return names[skillId] || skillId;
+            }
+            
+            updateUI() {
+                Object.keys(this.skills).forEach(skillId => {
+                    const skillNode = document.querySelector(`[data-skill="${skillId}"]`);
+                    if (!skillNode) return;
+                    
+                    const skill = this.skills[skillId];
+                    
+                    skillNode.classList.remove('locked', 'unlocked', 'completed');
+                    
+                    if (skill.completed) {
+                        skillNode.classList.add('completed');
+                    } else if (skill.unlocked) {
+                        skillNode.classList.add('unlocked');
+                    } else {
+                        skillNode.classList.add('locked');
+                    }
+                });
+                
+                this.updateSkillConnections();
+            }
+            
+            saveProgress() {
+                try {
+                    const progressData = {
+                        skills: this.skills,
+                        totalSessions: this.getTotalCompletedSessions(),
+                        totalTime: this.getTotalTime()
+                    };
+                    
+                    // Store in memory instead of localStorage
+                    window.boredomProgress = progressData;
+                } catch (e) {
+                    console.log('Progress saving not available');
+                }
+            }
+            
+            loadProgress() {
+                try {
+                    const saved = window.boredomProgress;
+                    if (saved && saved.skills) {
+                        this.skills = { ...this.skills, ...saved.skills };
+                    }
+                } catch (e) {
+                    console.log('Progress loading not available');
+                }
+            }
+            
+            resetAllProgress() {
+                if (confirm('Reset all progress? This will unlock only the first meditation and clear all achievements.')) {
+                    this.skills = {
+                        'wave-meditation': { unlocked: true, completed: false, progress: 0 },
+                        'static-contemplation': { unlocked: false, completed: false, progress: 0 },
+                        'number-sequence': { unlocked: false, completed: false, progress: 0 },
+                        'color-breathing': { unlocked: false, completed: false, progress: 0 },
+                        'ultimate-void': { unlocked: false, completed: false, progress: 0 }
+                    };
+                    
+                    // Clear saved progress
+                    window.boredomProgress = null;
+                    
+                    this.updateUI();
+                    alert('Progress reset. Only Wave Meditation is now available.');
+                }
+            }
+            
+            getTotalCompletedSessions() {
+                return Object.values(this.skills).filter(skill => skill.completed).length;
+            }
+            
+            getTotalTime() {
+                // Simplified time calculation - 2 minutes per completed session
+                return this.getTotalCompletedSessions() * 2;
+            }
+        }
+        
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new BoredomApp();
+        });
+    </script>
 </body>
+</html>
